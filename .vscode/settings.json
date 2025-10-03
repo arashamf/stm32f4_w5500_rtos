@@ -40,6 +40,12 @@
         "stm32f4xx_it.h": "c",
         "usart.h": "c",
         "w5500.h": "c",
-        "time.h": "c"
+        "time.h": "c",
+        "random": "c",
+        "string.h": "c",
+        "stdio.h": "c",
+        "cstdint": "c",
+        "socket.h": "c",
+        "stdarg.h": "c"
     }
 }

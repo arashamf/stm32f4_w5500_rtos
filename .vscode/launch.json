@@ -13,10 +13,9 @@
             "preLaunchTask": "build",
             "gdbPath": "arm-none-eabi-gdb",
             "svdFile": "${workspaceRoot}/STM32F407.svd", // Add you svd file
-            // Set you programmer and target controller
-            "configFiles": 
+            "configFiles":  
             [
-                "interface/stlink.cfg",
+                "interface/stlink.cfg",  // Set you programmer and target controller
                 "target/stm32f4x.cfg"
             ],
             "runToEntryPoint": "main",
@@ -24,7 +23,7 @@
             "swoConfig": 
             {
                 "enabled": true,
-                "swoFrequency": 480000,
+                "swoFrequency": 960000,
                 "cpuFrequency": 144000000,
                 "decoders": 
                 [

@@ -39,7 +39,11 @@ extern "C" {
 void MX_USART2_UART_Init(void);
 
 /* USER CODE BEGIN Prototypes */
+#ifdef DEBUG_MODE 
 void dbg_putStr (const char *);
+//void  dbg_putStr (const char *str, ...);
+#endif
+
 #ifdef __GNUC__
 int __io_putchar(int ch);
 #else

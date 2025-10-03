@@ -21,7 +21,7 @@ TARGET = f4_w5500
 ######################################
 # debug build?
 DEBUG = 1
-#DEBUG = 0
+
 # optimization
 OPT = -Og
 
@@ -34,7 +34,9 @@ BUILD_DIR = build
 ROOT_DIR     = .
 
 APP_PATH 			= 	$(ROOT_DIR)/Core
-APP_PATH_INC 		= 	$(ROOT_DIR)/Core/Inc
+APP_PATH_SRC 		= 	$(APP_PATH)/Src
+APP_PATH_INC 		= 	$(APP_PATH)/Inc
+
 FREERTOS_PATH 		=	$(ROOT_DIR)/Middlewares/Third_Party/FreeRTOS/Source
 FREERTOS_PATH_INC 	= 	$(FREERTOS_PATH)/include
 FREERTOS_PATH_CMSIS	= 	$(FREERTOS_PATH)/CMSIS_RTOS
@@ -45,19 +47,19 @@ FREERTOS_PATH_PORT	=  	$(FREERTOS_PATH)/portable/GCC/ARM_CM4F
 ######################################
 # C sources
 C_SOURCES =  \
-Core/Src/freertos.c \
-Core/Src/gpio.c \
-Core/Src/main.c \
-Core/Src/net.c \
-Core/Src/spi.c \
-Core/Src/usart.c \
-Core/Src/w5500.c \
-Core/Src/syscalls.c\ \
-Core/Src/sysmem.c\ \
-Core/Src/stm32f4xx_it.c \
-Core/Src/system_stm32f4xx.c \
-Core/Src/stm32f4xx_hal_msp.c \
-Core/Src/stm32f4xx_hal_timebase_tim.c \
+$(APP_PATH_SRC)/freertos.c \
+$(APP_PATH_SRC)/gpio.c \
+$(APP_PATH_SRC)/main.c \
+$(APP_PATH_SRC)/spi.c \
+$(APP_PATH_SRC)/usart.c \
+$(APP_PATH_SRC)/syscalls.c\ \
+$(APP_PATH_SRC)/sysmem.c\ \
+$(APP_PATH_SRC)/stm32f4xx_it.c \
+$(APP_PATH_SRC)/system_stm32f4xx.c \
+$(APP_PATH_SRC)/stm32f4xx_hal_msp.c \
+$(APP_PATH_SRC)/stm32f4xx_hal_timebase_tim.c \
+$(APP_PATH_SRC)/driver_w5500.c \
+$(APP_PATH_SRC)/net.c \
 Middlewares/Third_Party/FreeRTOS/Source/croutine.c \
 Middlewares/Third_Party/FreeRTOS/Source/event_groups.c \
 Middlewares/Third_Party/FreeRTOS/Source/list.c \
@@ -67,9 +69,9 @@ Middlewares/Third_Party/FreeRTOS/Source/tasks.c \
 Middlewares/Third_Party/FreeRTOS/Source/timers.c \
 Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c \
 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_2.c \
-Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c \
-#Core/Src/httpd.c
-#Core/Src/httpd.c# ASM sources
+Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c 
+#Core/Src/net.c \
+Core/Src/httpd.c\
 
 # C includes
 C_INCLUDES =  	$(ROOT_DIR)
@@ -79,14 +81,13 @@ C_INCLUDES +=	$(FREERTOS_PATH_CMSIS)
 C_INCLUDES +=	$(FREERTOS_PATH_PORT)
 
 ASM_SOURCES =
-#ASM_SOURCES =  \
-#startup_stm32f407xx.s
 
 # ASM sources
 ASMM_SOURCES = 
 
 # include sub makefiles
 include makefile_std_lib.mk   #Standard Peripheral Library
+include makefile_w5500_lib.mk
 
 INC_DIR  = $(patsubst %, -I%, $(C_INCLUDES))
 
@@ -131,21 +132,16 @@ AS_DEFS =
 
 # C defines
 C_DEFS =  \
--DUSE_HAL_DRIVER \
--DSTM32F407xx \
--DUSE_FULL_LL_DRIVER
+-D USE_HAL_DRIVER \
+-D STM32F407xx \
+-D USE_FULL_LL_DRIVER 
 
+#ifeq ($(DEBUG), 1)
+#C_DEFS += -D DEBUG_MODE
+#endif
 
 # AS includes
-AS_INCLUDES =  \
--ICore/Inc \
--IDrivers/STM32F4xx_HAL_Driver/Inc \
--IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy \
--IMiddlewares/Third_Party/FreeRTOS/Source/include \
--IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS \
--IMiddlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F \
--IDrivers/CMSIS/Device/ST/STM32F4xx/Include \
--IDrivers/CMSIS/Include
+AS_INCLUDES =  
 
 # C includes
 #C_INCLUDES =  \
@@ -158,6 +154,7 @@ CFLAGS += $(MCU) $(C_DEFS) $(OPT) -Wall -fdata-sections -ffunction-sections
 
 ifeq ($(DEBUG), 1)
 CFLAGS += -g -gdwarf-2
+C_DEFS += -D DEBUG_MODE
 endif
 
 
@@ -170,11 +167,11 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 #######################################
 # link script
 LDSCRIPT = STM32F407XX_FLASH.ld
-LDSCR_PATH = ROOT_DIR
+#LDSCR_PATH = $(ROOT_DIR)
 
 # libraries
 LIBS = -lc -lm -lnosys 
-LIBDIR = 
+LIBDIR =
 LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 
 # default action: build all
@@ -239,11 +236,11 @@ else
 	MK = gd32f30x
 endif
 
-CMSIS_DAP = 0
-ifeq ($(CMSIS_DAP), 1)
-	OCD_INTER = cmsis-dap
-else
+STLINK = 1
+ifeq ($(STLINK), 1)
 	OCD_INTER = stlink
+else
+	OCD_INTER = cmsis-dap
 endif
 
 write: $(BUILD_DIR)/$(TARGET).elf

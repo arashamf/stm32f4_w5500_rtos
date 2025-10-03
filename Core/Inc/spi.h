@@ -41,7 +41,14 @@ extern SPI_HandleTypeDef hspi1;
 void MX_SPI1_Init(void);
 
 /* USER CODE BEGIN Prototypes */
+void W5500_write_data  (uint8_t* buf, size_t lenght);
+void W5500_read_data  (uint8_t* buf, size_t lenght);
+void W5500_write_read_data  (uint8_t* wbuf, uint8_t* rbuf, size_t lenght);
 
+void W5500_ReadBuff(uint8_t* buff, uint16_t len);
+void W5500_WriteBuff(uint8_t* buff, uint16_t len);
+uint8_t W5500_ReadByte(void);
+void W5500_WriteByte(uint8_t byte);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

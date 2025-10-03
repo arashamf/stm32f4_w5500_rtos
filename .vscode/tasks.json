@@ -7,33 +7,31 @@
             "type": "shell",
             "command": "make",
             "options": {
-                "cwd": "${workspaceRoot}",
+                "cwd": "${workspaceRoot}"
             },
-            "args": 
-            [
+            "args": [
                 "-j9"
             ],
-            "group": 
-            {
+            "group": {
                 "kind": "build",
                 "isDefault": true
             },
             "problemMatcher": []
         },
-
         {
             "label": "write_mk",
             "type": "shell",
-            "command": "make prog",
+            "command": "make",
+            "args": [
+                "write"
+            ],
             "problemMatcher": []
         },
-
         {
             "label": "clean",
             "type": "shell",
             "command": "make",
-            "args": 
-            [
+            "args": [
                 "clean"
             ],
             "options": {

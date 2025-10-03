@@ -21,9 +21,14 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
-#define 	DBG_UART 			USART2
+#include <stdarg.h>
 
+
+#ifdef DEBUG_MODE 
+#define 	DBG_UART 			USART2
 inline void dbg_putc (char c);
+char dbg_buf[50];
+#endif
 /* USER CODE END 0 */
 
 /* USART2 init function */
@@ -75,7 +80,7 @@ void MX_USART2_UART_Init(void)
 }
 
 /* USER CODE BEGIN 1 */
-
+#ifdef DEBUG_MODE 
 //-------------------------------передача символа по UART-----------------------------------//
 inline void dbg_putc (char c)
 {
@@ -84,12 +89,20 @@ inline void dbg_putc (char c)
 }
 
 //-------------------------------передача строки по UART-----------------------------------//
+//void dbg_putStr (const char *str, ...)
 void dbg_putStr (const char *str)
 {
 	char c;
+
+  //va_list args;
+ // va_start(args, str);
+ // vsnprintf( dbg_buf, sizeof( dbg_buf), str, args);
+
 	while((c = *str++))
 	{ dbg_putc(c);  }
+ // va_end(args);
 }
+#endif
 
 //-------------------------------передача символа по UART-----------------------------------//
 int __io_putchar(int ch)

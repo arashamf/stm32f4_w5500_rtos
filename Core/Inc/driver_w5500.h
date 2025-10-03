@@ -1,5 +1,5 @@
-#ifndef W5500_H_
-#define W5500_H_
+#ifndef DRIVER_W5500_H_
+#define DRIVER_W5500_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -8,12 +8,20 @@ extern "C" {
 //--------------------------------------------------
 #include "stm32f4xx_hal.h"
 #include "main.h"
+#include "w5500.h"
 
 //--------------------------------------------------
 #define MAC_ADDR {0x00,0x15,0x42,0xBF,0xF0,0x51}
+#define IP_ADDR {192,168,111,197}
+#define GATE_ADDR {192,168,111,11}
+#define NET_MASK {255,255,255,0}
+#define DEF_PORT    1000
+#define DEF_SOCKET  0
+#define HTTP_SOCKET     2
+
 //--------------------------------------------------
 #define BSB_COMMON 0x00
-#define BSB_S0 0x01
+#define BSB_S0    0x01
 #define BSB_S0_TX 0x02
 #define BSB_S0_RX 0x03
 //--------------------------------------------------
@@ -25,7 +33,7 @@ extern "C" {
 #define OM_FDM2 0x02//режим передачи данных по два байта
 #define OM_FDM3 0x03//режим передачи данных по четыре байта
 //--------------------------------------------------
-#define MR 0x0000//Mode Register
+#define MODEREG 0x0000//Mode Register
 //--------------------------------------------------
 #define SHAR0 0x0009//Source Hardware Address Register MSB
 #define SHAR1 0x000A
@@ -49,9 +57,9 @@ extern "C" {
 #define Sn_PORT0 0x0004 // Socket 0 Source Port Register MSB
 #define Sn_PORT1 0x0005 // Socket 0 Source Port Register LSB
 //--------------------------------------------------
-#define Sn_MR 0x0000 // Socket 0 Mode Register
-#define Sn_CR 0x0001 // Socket 0 Command Register
-#define Sn_SR 0x0003 // Socket 0 Status Register
+#define NUMB_MR 0x0000 // Socket 0 Mode Register
+#define NUMB_CR 0x0001 // Socket 0 Command Register
+#define NUMB_SR 0x0003 // Socket 0 Status Register
 //--------------------------------------------------
 //Socket mode
 #define Mode_CLOSED 0x00
@@ -80,19 +88,6 @@ extern "C" {
 //--------------------------------------------------
 #define be16toword(a) ((((a)>>8)&0xff)|(((a)<<8)&0xff00))
 
-//--------------------------------------------------
-typedef struct tcp_prop {
-volatile uint8_t cur_sock;//активный сокет
-} tcp_prop_ptr;
-
-//--------------------------------------------------
-typedef struct data_sect {
-  volatile uint16_t addr;
-  volatile uint8_t opcode;
-  uint8_t data[];
-} data_sect_ptr;
-
-//--------------------------------------------------
 //Статусы передачи данных
 #define DATA_COMPLETED 0 //передача данных закончена
 #define DATA_ONE 1 //передаём единственный пакет
@@ -100,30 +95,42 @@ typedef struct data_sect {
 #define DATA_MIDDLE 3 //передаём средний пакет
 #define DATA_LAST 4 //передаём последний пакет
 #define DATA_END 5 //закрываем соединение после передачи данных
-//--------------------------------------------------
+
 //Варианты протоколов TCP
 #define PRT_TCP_UNCNOWN 0
 #define PRT_TCP_HTTP 1
 
 //--------------------------------------------------
-void w5500_ini(void);
-void w5500_packetReceive(void);
-uint16_t GetReadPointer(uint8_t sock_num);
+typedef struct {
+volatile uint8_t cur_sock;  //активный сокет
+} tcp_prop_ptr;
+
+//--------------------------------------------------
+typedef struct {
+  volatile uint16_t addr;
+  volatile uint8_t opcode;
+  uint8_t data[];
+} data_sect_ptr;  //структура для буфера передачи
+
+//--------------------------------------------------
 uint8_t w5500_readSockBufByte(uint8_t sock_num, uint16_t point);
-void SocketClosedWait(uint8_t sock_num);
-void DisconnectSocket(uint8_t sock_num);
 void OpenSocket(uint8_t sock_num, uint16_t mode);
 void SocketInitWait(uint8_t sock_num);
 void ListenSocket(uint8_t sock_num);
 void SocketListenWait(uint8_t sock_num);
-uint16_t GetWritePointer(uint8_t sock_num);
-void SetWritePointer(uint8_t sock_num, uint16_t point);
-void w5500_writeSockBuf(uint8_t sock_num, uint16_t point, uint8_t *buf, uint16_t len);
+void DisconnectSocket(uint8_t sock_num);
+void SocketClosedWait(uint8_t sock_num);
+uint8_t GetSocketStatus(uint8_t sock_num);
 void RecvSocket(uint8_t sock_num);
 void SendSocket(uint8_t sock_num);
+uint16_t GetReadPointer(uint8_t sock_num);
+uint16_t GetWritePointer(uint8_t sock_num);
+void SetWritePointer(uint8_t sock_num, uint16_t point);
+void w5500_packetReceive(void);
+void w5500_ini(wiz_NetInfo *, uint16_t );
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* W5500_H_ */
+#endif /* DRIVER_W5500_H_ */

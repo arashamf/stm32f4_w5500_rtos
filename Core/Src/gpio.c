@@ -118,4 +118,16 @@ void control_LED (uint8_t number_leds, uint8_t comm)
 {
   led_ctl(comm, leds[number_leds].port, leds[number_leds].pin);
 }
+
+//-----------------------------------------
+void W5500_Select (void)
+{
+  LL_GPIO_ResetOutputPin(CS_GPIO_Port, CS_Pin);
+}
+
+//-----------------------------------------
+void W5500_Unselect (void)
+{
+  LL_GPIO_SetOutputPin(CS_GPIO_Port, CS_Pin);
+}
 /* USER CODE END 2 */

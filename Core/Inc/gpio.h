@@ -64,6 +64,10 @@ void MX_GPIO_Init(void);
 void leds_init (void);
 void hard_reset (uint32_t delay);
 void control_LED (uint8_t number_leds, uint8_t comm);
+
+void W5500_Select (void);
+void W5500_Unselect (void);
+
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

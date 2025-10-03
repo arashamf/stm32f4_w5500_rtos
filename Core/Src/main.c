@@ -25,8 +25,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "net.h"
+//#include "net.h"
+#include "socket.h"
+#include "w5500.h"
 #include <stdio.h>
+
+//#include "driver_w5500.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,6 +53,8 @@
 /* USER CODE BEGIN PV */
 extern leds_t leds[];
 uint8_t handle_led =  green;
+
+extern char dbg_buf[];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -60,7 +66,6 @@ void MX_FREERTOS_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
 /* USER CODE END 0 */
 
 /**
@@ -95,12 +100,17 @@ int main(void)
   MX_SPI1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  #if DEBUG == 1
+
+  #ifdef DEBUG_MODE 
   dbg_putStr ("start\r\n");
   #endif
-  net_ini();
+
   leds_init ();
   control_LED (handle_led, ON);
+  w5500_driver_init ();
+  socket_init ();
+  //w5500_ini(&net_info, LOCAL_PORT);
+
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in cmsis_os2.c) */
@@ -115,7 +125,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    net_poll();
+   // net_poll();
     control_LED (handle_led, OFF);
     handle_led++;
     if (handle_led >= number)

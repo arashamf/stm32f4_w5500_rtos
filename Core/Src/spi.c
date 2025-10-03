@@ -21,7 +21,7 @@
 #include "spi.h"
 
 /* USER CODE BEGIN 0 */
-
+#include "gpio.h"
 /* USER CODE END 0 */
 
 SPI_HandleTypeDef hspi1;
@@ -125,5 +125,49 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* spiHandle)
 }
 
 /* USER CODE BEGIN 1 */
+//-------------------------------------------------------
+void W5500_write_data  (uint8_t* buf, size_t lenght)
+{
+  W5500_CS(ON);
+  HAL_SPI_Transmit(&hspi1, buf, lenght, 0x00FFFFFF);
+  W5500_CS(OFF);
+}
 
+//-------------------------------------------------------
+void W5500_read_data (uint8_t* buf, size_t lenght)
+{
+  W5500_CS(ON);
+  HAL_SPI_Receive(&hspi1, (uint8_t*)buf, lenght, 0x00FFFFFF);
+  W5500_CS(OFF);
+}
+
+//-------------------------------------------------------
+void W5500_write_read_data (uint8_t* wbuf, uint8_t* rbuf, size_t lenght)
+{
+  W5500_CS(ON);
+  HAL_SPI_TransmitReceive(&hspi1, wbuf, rbuf, lenght, 0x00FFFFFF);
+  W5500_CS(OFF);
+}
+
+//-------------------------------------------------------
+void W5500_ReadBuff(uint8_t* buff, uint16_t len) {
+    HAL_SPI_Receive(&hspi1, buff, len, HAL_MAX_DELAY);
+}
+
+//-------------------------------------------------------
+void W5500_WriteBuff(uint8_t* buff, uint16_t len) {
+    HAL_SPI_Transmit(&hspi1, buff, len, 0x00FFFFFF);
+}
+
+//-------------------------------------------------------
+uint8_t W5500_ReadByte(void) {
+    uint8_t byte;
+    W5500_ReadBuff(&byte, sizeof(byte));
+    return byte;
+}
+
+//-------------------------------------------------------
+void W5500_WriteByte(uint8_t byte) {
+    W5500_WriteBuff(&byte, sizeof(byte));
+}
 /* USER CODE END 1 */

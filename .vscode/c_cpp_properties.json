@@ -1,18 +1,29 @@
+{  
+    "env": {
+        "DefaultIncPath": [
+        "${workspaceFolder}", 
+        "${workspaceFolder}/Core/Inc", 
+        "${workspaceFolder}/Drivers/STM32F4xx_HAL_Driver/Inc",   
+        "${workspaceFolder}/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy", 
+        "${workspaceFolder}/Drivers/CMSIS/Device/ST/STM32F4xx/Include",
+        "${workspaceFolder}/Drivers/CMSIS/Include", 
+        "${workspaceFolder}/Middlewares/Third_Party/FreeRTOS/Source/include",
+        "${workspaceFolder}/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F", 
+        "${workspaceFolder}/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS",
+        "${workspaceFolder}/Lib/ioLibrary_Driver/Ethernet",
+        "${workspaceFolder}/Lib/ioLibrary_Driver/Ethernet/W5500",
+        "${workspaceFolder}/Lib/ioLibrary_Driver/Internet/DHCP",
+        "${workspaceFolder}/Lib/ioLibrary_Driver/Internet/DNS"
+        ]
+    },
 
-{
     "configurations": [
         {
             "name": "STM32",
             "compilerPath": "arm-none-eabi-gcc",
             "includePath": [
-                "${workspaceRoot}/Core/Inc",
-                "${workspaceRoot}/**",
-                "${workspaceRoot}/Drivers/STM32F4xx_HAL_Driver/Inc",
-                "${workspaceRoot}/Drivers/CMSIS/Device/ST/STM32F4xx/Include",
-                "${workspaceRoot}/Drivers/CMSIS/Include",
-                "${workspaceRoot}/Middlewares/Third_Party/FreeRTOS/Source/include",
-                "${workspaceRoot}/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F",
-                "${workspaceRoot}/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS"
+                "${DefaultIncPath}",
+                "${workspaceRoot}/**"
             ],
             "cStandard": "c11",
             "cppStandard": "c++17",
@@ -24,9 +35,9 @@
                 "STM32F407xx",
                 "USE_HAL_DRIVER",
                 "USE_FULL_LL_DRIVER",
-                "_RTE_", 
+                "_RTE_",
+                "DEBUG_MODE" ,
                 "USE_FULL_ASSERT"
-
             ]
         }
     ],
