@@ -486,6 +486,7 @@ int32_t recv(uint8_t sn, uint8_t * buf, uint16_t len)
    return (int32_t)len;
 }
 
+//----------------------------------------------------------------
 int32_t sendto(uint8_t sn, uint8_t * buf, uint16_t len, uint8_t * addr, uint16_t port)
 {
    uint8_t tmp = 0;
@@ -628,9 +629,10 @@ int32_t recvfrom(uint8_t sn, uint8_t * buf, uint16_t len, uint8_t * addr, uint16
    {
       while(1)
       {
-         pack_len = getSn_RX_RSR(sn);
+         pack_len = getSn_RX_RSR(sn);  //Sn_RX_RSR indicates the data size received and saved in Socket n RX Buffer.
          if(getSn_SR(sn) == SOCK_CLOSED) return SOCKERR_SOCKCLOSED;
-         if( (sock_io_mode & (1<<sn)) && (pack_len == 0) ) return SOCK_BUSY;
+         if( (sock_io_mode & (1<<sn)) && (pack_len == 0) ) 
+         return SOCK_BUSY;
          if(pack_len != 0) break;
       };
    }
@@ -641,7 +643,7 @@ int32_t recvfrom(uint8_t sn, uint8_t * buf, uint16_t len, uint8_t * addr, uint16
 	   case Sn_MR_UDP :
 	      if(sock_remained_size[sn] == 0)
 	      {
-   			wiz_recv_data(sn, head, 8);
+   			wiz_recv_data(sn, head, 8); //head copy
    			setSn_CR(sn,Sn_CR_RECV);
    			while(getSn_CR(sn));
    			// read peer's IP address, port number & packet length

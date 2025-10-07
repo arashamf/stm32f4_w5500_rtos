@@ -37,6 +37,7 @@
                 "USE_FULL_LL_DRIVER",
                 "_RTE_",
                 "DEBUG_MODE" ,
+                "UDP_MODE" ,
                 "USE_FULL_ASSERT"
             ]
         }

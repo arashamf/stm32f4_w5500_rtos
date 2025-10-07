@@ -11,22 +11,23 @@ extern "C" {
 #include "w5500.h"
 
 //--------------------------------------------------
-#define MAC_ADDR {0x00,0x15,0x42,0xBF,0xF0,0x51}
-#define IP_ADDR {192,168,111,197}
-#define GATE_ADDR {192,168,111,11}
-#define NET_MASK {255,255,255,0}
-#define DEF_PORT    1000
-#define DEF_SOCKET  0
-#define HTTP_SOCKET     2
+#define   MAC_ADDR      {0x00,0x15,0x42,0xBF,0xF0,0x51}
+#define   IP_ADDR       {192,168,111,197}
+#define   GATE_ADDR     {192,168,111,11}
+#define   NET_MASK      {255,255,255,0}
+#define   DEF_PORT      1111
+#define   DEF_SOCKET    0
+#define   DNS_SOCKET    1
+#define   HTTP_SOCKET   2
 
 //--------------------------------------------------
-#define BSB_COMMON 0x00
-#define BSB_S0    0x01
-#define BSB_S0_TX 0x02
-#define BSB_S0_RX 0x03
+#define BSB_COMMON  0x00
+#define BSB_S0      0x01
+#define BSB_S0_TX   0x02
+#define BSB_S0_RX   0x03
 //--------------------------------------------------
 #define RWB_WRITE 1
-#define RWB_READ 0
+#define RWB_READ  0
 //--------------------------------------------------
 #define OM_FDM0 0x00//режим передачи данных переменной длины
 #define OM_FDM1 0x01//режим передачи данных по одному байту
@@ -41,10 +42,10 @@ extern "C" {
 #define SHAR3 0x000C
 #define SHAR4 0x000D
 #define SHAR5 0x000E// LSB
-#define GWR0 0x0001//Gateway IP Address Register MSB
-#define GWR1 0x0002
-#define GWR2 0x0003
-#define GWR3 0x0004// LSB
+#define GWR0  0x0001//Gateway IP Address Register MSB
+#define GWR1  0x0002
+#define GWR2  0x0003
+#define GWR3  0x0004// LSB
 #define SUBR0 0x0005//Subnet Mask Register MSB
 #define SUBR1 0x0006
 #define SUBR2 0x0007
@@ -63,38 +64,39 @@ extern "C" {
 //--------------------------------------------------
 //Socket mode
 #define Mode_CLOSED 0x00
-#define Mode_TCP 0x01
-#define Mode_UDP 0x02
+#define Mode_TCP    0x01
+#define Mode_UDP    0x02
 #define Mode_MACRAV 0x04
 //--------------------------------------------------
 //Socket states
-#define SOCK_CLOSED 0x00
-#define SOCK_INIT 0x13
-#define SOCK_LISTEN 0x14
-#define SOCK_ESTABLISHED 0x17
+#define SOCK_CLOSED       0x00
+#define SOCK_INIT         0x13
+#define SOCK_LISTEN       0x14
+#define SOCK_ESTABLISHED  0x17
+#define SOCK_UDP          0x22
 //-------------------------------------------
-#define Sn_MSSR0 0x0012
-#define Sn_MSSR1 0x0013
-#define Sn_TX_FSR0 0x0020
-#define Sn_TX_FSR1 0x0021
-#define Sn_TX_RD0 0x0022
-#define Sn_TX_RD1 0x0023
-#define Sn_TX_WR0 0x0024
-#define Sn_TX_WR1 0x0025
-#define Sn_RX_RSR0 0x0026
-#define Sn_RX_RSR1 0x0027
-#define Sn_RX_RD0 0x0028
-#define Sn_RX_RD1 0x0029
+#define Sn_MSSR0    0x0012
+#define Sn_MSSR1    0x0013
+#define Sn_TX_FSR0  0x0020
+#define Sn_TX_FSR1  0x0021
+#define Sn_TX_RD0   0x0022
+#define Sn_TX_RD1   0x0023
+#define Sn_TX_WR0   0x0024
+#define Sn_TX_WR1   0x0025
+#define Sn_RX_RSR0  0x0026
+#define Sn_RX_RSR1  0x0027
+#define Sn_RX_RD0   0x0028
+#define Sn_RX_RD1   0x0029
 //--------------------------------------------------
 #define be16toword(a) ((((a)>>8)&0xff)|(((a)<<8)&0xff00))
 
 //Статусы передачи данных
-#define DATA_COMPLETED 0 //передача данных закончена
-#define DATA_ONE 1 //передаём единственный пакет
-#define DATA_FIRST 2 //передаём первый пакет
-#define DATA_MIDDLE 3 //передаём средний пакет
-#define DATA_LAST 4 //передаём последний пакет
-#define DATA_END 5 //закрываем соединение после передачи данных
+#define DATA_COMPLETED  0   //передача данных закончена
+#define DATA_ONE        1   //передаём единственный пакет
+#define DATA_FIRST      2   //передаём первый пакет
+#define DATA_MIDDLE     3   //передаём средний пакет
+#define DATA_LAST       4   //передаём последний пакет
+#define DATA_END        5   //закрываем соединение после передачи данных
 
 //Варианты протоколов TCP
 #define PRT_TCP_UNCNOWN 0
@@ -104,6 +106,7 @@ extern "C" {
 typedef struct {
 volatile uint8_t cur_sock;  //активный сокет
 } tcp_prop_ptr;
+
 
 //--------------------------------------------------
 typedef struct {

@@ -27,7 +27,8 @@
 #ifdef DEBUG_MODE 
 #define 	DBG_UART 			USART2
 inline void dbg_putc (char c);
-char dbg_buf[50];
+char dbg_buf[100];
+uint32_t dbg_buf_size = sizeof(dbg_buf);
 #endif
 /* USER CODE END 0 */
 

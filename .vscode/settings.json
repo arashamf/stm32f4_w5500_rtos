@@ -46,6 +46,9 @@
         "stdio.h": "c",
         "cstdint": "c",
         "socket.h": "c",
-        "stdarg.h": "c"
+        "stdarg.h": "c",
+        "driver_w5500.h": "c",
+        "complex": "c",
+        "format": "c"
     }
 }

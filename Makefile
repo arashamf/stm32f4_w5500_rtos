@@ -37,17 +37,17 @@ APP_PATH 			= 	$(ROOT_DIR)/Core
 APP_PATH_SRC 		= 	$(APP_PATH)/Src
 APP_PATH_INC 		= 	$(APP_PATH)/Inc
 
-FREERTOS_PATH 		=	$(ROOT_DIR)/Middlewares/Third_Party/FreeRTOS/Source
+FREERTOS_PATH 		=	$(ROOT_DIR)/Middlewares/Third_Party/FreeRTOS
+FREERTOS_PATH_SRC  = 	$(FREERTOS_PATH)/Source
 FREERTOS_PATH_INC 	= 	$(FREERTOS_PATH)/include
-FREERTOS_PATH_CMSIS	= 	$(FREERTOS_PATH)/CMSIS_RTOS
-FREERTOS_PATH_PORT	=  	$(FREERTOS_PATH)/portable/GCC/ARM_CM4F
+FREERTOS_PATH_CMSIS	= 	$(FREERTOS_PATH)/Source/CMSIS_RTOS
+FREERTOS_PATH_PORT	=  	$(FREERTOS_PATH)/Source/portable/GCC/ARM_CM4F
 
 ######################################
 # source
 ######################################
 # C sources
 C_SOURCES =  \
-$(APP_PATH_SRC)/freertos.c \
 $(APP_PATH_SRC)/gpio.c \
 $(APP_PATH_SRC)/main.c \
 $(APP_PATH_SRC)/spi.c \
@@ -59,26 +59,11 @@ $(APP_PATH_SRC)/system_stm32f4xx.c \
 $(APP_PATH_SRC)/stm32f4xx_hal_msp.c \
 $(APP_PATH_SRC)/stm32f4xx_hal_timebase_tim.c \
 $(APP_PATH_SRC)/driver_w5500.c \
-$(APP_PATH_SRC)/net.c \
-Middlewares/Third_Party/FreeRTOS/Source/croutine.c \
-Middlewares/Third_Party/FreeRTOS/Source/event_groups.c \
-Middlewares/Third_Party/FreeRTOS/Source/list.c \
-Middlewares/Third_Party/FreeRTOS/Source/queue.c \
-Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c \
-Middlewares/Third_Party/FreeRTOS/Source/tasks.c \
-Middlewares/Third_Party/FreeRTOS/Source/timers.c \
-Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c \
-Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_2.c \
-Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c 
-#Core/Src/net.c \
-Core/Src/httpd.c\
+$(APP_PATH_SRC)/net.c 
 
 # C includes
 C_INCLUDES =  	$(ROOT_DIR)
 C_INCLUDES += 	$(APP_PATH_INC)
-C_INCLUDES +=	$(FREERTOS_PATH_INC)
-C_INCLUDES +=	$(FREERTOS_PATH_CMSIS)
-C_INCLUDES +=	$(FREERTOS_PATH_PORT)
 
 ASM_SOURCES =
 
@@ -88,6 +73,7 @@ ASMM_SOURCES =
 # include sub makefiles
 include makefile_std_lib.mk   #Standard Peripheral Library
 include makefile_w5500_lib.mk
+#include	makefile_freertos.mk
 
 INC_DIR  = $(patsubst %, -I%, $(C_INCLUDES))
 
@@ -134,6 +120,7 @@ AS_DEFS =
 C_DEFS =  \
 -D USE_HAL_DRIVER \
 -D STM32F407xx \
+-D UDP_MODE \
 -D USE_FULL_LL_DRIVER 
 
 #ifeq ($(DEBUG), 1)
@@ -146,17 +133,16 @@ AS_INCLUDES =
 # C includes
 #C_INCLUDES =  \
 
-# compile gcc flags
-ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
-
-#CFLAGS += $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
-CFLAGS += $(MCU) $(C_DEFS) $(OPT) -Wall -fdata-sections -ffunction-sections
-
 ifeq ($(DEBUG), 1)
 CFLAGS += -g -gdwarf-2
 C_DEFS += -D DEBUG_MODE
 endif
 
+# compile gcc flags
+ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
+
+#CFLAGS += $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
+CFLAGS += $(MCU) $(C_DEFS) $(OPT) -Wall -fdata-sections -ffunction-sections
 
 # Generate dependency information
 CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"

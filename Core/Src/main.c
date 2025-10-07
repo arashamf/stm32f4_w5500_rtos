@@ -18,14 +18,14 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "cmsis_os.h"
+//#include "cmsis_os.h"
 #include "spi.h"
 #include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-//#include "net.h"
+#include "net.h"
 #include "socket.h"
 #include "w5500.h"
 #include <stdio.h>
@@ -54,6 +54,7 @@
 extern leds_t leds[];
 uint8_t handle_led =  green;
 
+//extern uint8_t dest_addr[];
 extern char dbg_buf[];
 /* USER CODE END PV */
 
@@ -109,8 +110,6 @@ int main(void)
   control_LED (handle_led, ON);
   w5500_driver_init ();
   socket_init ();
-  //w5500_ini(&net_info, LOCAL_PORT);
-
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in cmsis_os2.c) */
@@ -131,7 +130,19 @@ int main(void)
     if (handle_led >= number)
     { handle_led = green; }
     control_LED (handle_led, ON);
-    HAL_Delay (100);
+    HAL_Delay (200);
+    check_UDPnet();
+    /*
+    //if(getSn_IR(sn) & Sn_IR_CON)
+    {
+      
+      #ifdef DEBUG_MODE 
+      sprintf (dbg_buf, "send_status=%ld\r\n", (test_UDP_client ((uint8_t *)"test_test")));
+      dbg_putStr (dbg_buf);
+      #endif
+      //wiz_send_data(0, "test_test", 8);
+    }*/
+   
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

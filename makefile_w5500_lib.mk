@@ -3,6 +3,7 @@
 W5500_IO_DIR		=	$(ROOT_DIR)/Lib/ioLibrary_Driver
 W5500_ETH_DIR  		= 	$(W5500_IO_DIR)/Ethernet
 W5500_INTERNET_DIR  = 	$(W5500_IO_DIR)/Internet
+W5500_APP_DIR  		= 	$(W5500_IO_DIR)/Application/
 
 # source director
 
@@ -14,8 +15,10 @@ C_SOURCES  += $(W5500_ETH_DIR)/wizchip_conf.c
 C_SOURCES  += $(W5500_ETH_DIR)/w5500.c 	
 C_SOURCES  += $(W5500_INTERNET_DIR)/DHCP/dhcp.c 
 C_SOURCES  += $(W5500_INTERNET_DIR)/DNS/dns.c 
+C_SOURCES  += $(W5500_APP_DIR)/loopback/loopback.c
 
 # include directories
 C_INCLUDES += 	$(W5500_ETH_DIR)			
 C_INCLUDES +=	$(W5500_INTERNET_DIR)/DHCP
 C_INCLUDES +=	$(W5500_INTERNET_DIR)/DNS
+C_INCLUDES +=	$(W5500_APP_DIR)/loopback/
