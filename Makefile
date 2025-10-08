@@ -36,13 +36,6 @@ ROOT_DIR     = .
 APP_PATH 			= 	$(ROOT_DIR)/Core
 APP_PATH_SRC 		= 	$(APP_PATH)/Src
 APP_PATH_INC 		= 	$(APP_PATH)/Inc
-
-FREERTOS_PATH 		=	$(ROOT_DIR)/Middlewares/Third_Party/FreeRTOS
-FREERTOS_PATH_SRC  = 	$(FREERTOS_PATH)/Source
-FREERTOS_PATH_INC 	= 	$(FREERTOS_PATH)/include
-FREERTOS_PATH_CMSIS	= 	$(FREERTOS_PATH)/Source/CMSIS_RTOS
-FREERTOS_PATH_PORT	=  	$(FREERTOS_PATH)/Source/portable/GCC/ARM_CM4F
-
 ######################################
 # source
 ######################################
@@ -64,7 +57,6 @@ $(APP_PATH_SRC)/net.c
 # C includes
 C_INCLUDES =  	$(ROOT_DIR)
 C_INCLUDES += 	$(APP_PATH_INC)
-
 ASM_SOURCES =
 
 # ASM sources
@@ -73,7 +65,7 @@ ASMM_SOURCES =
 # include sub makefiles
 include makefile_std_lib.mk   #Standard Peripheral Library
 include makefile_w5500_lib.mk
-#include	makefile_freertos.mk
+include	makefile_freertos.mk
 
 INC_DIR  = $(patsubst %, -I%, $(C_INCLUDES))
 

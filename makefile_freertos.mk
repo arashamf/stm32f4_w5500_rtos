@@ -1,16 +1,17 @@
 
 # define freertos dir
-FREERTOS_DIR = $(ROOT_DIR)/Middlewares/Third_Party/FreeRTOS
+FREERTOS_DIR = $(ROOT_DIR)/Middlewares/Third_Party/FreeRTOS/Source
 
 # source director
-FREERTOS_SRC_DIR     = $(FREERTOS_DIR)/Source
-FREERTOS_ARM_CM4_DIR = $(FREERTOS_DIR)/portable/GCC/ARM_CM4F
-FREERTOS_MemMang_DIR = $(FREERTOS_DIR)/portable/MemMang
+FREERTOS_SRC_DIR     = $(FREERTOS_DIR)
+FREERTOS_ARM_CM4_DIR = $(FREERTOS_SRC_DIR)/portable/GCC/ARM_CM4F
+FREERTOS_MemMang_DIR = $(FREERTOS_SRC_DIR)/portable/MemMang
 
-FREERTOS_INC_DIR     		= $(FREERTOS_DIR)/Source/include
+FREERTOS_INC_DIR     		= $(FREERTOS_DIR)/include
 FREERTOS_ARM_CM4_INC_DIR 	= $(FREERTOS_ARM_CM4_DIR)
 
 # add freertos source
+C_SOURCES  += $(FREERTOS_SRC_DIR)/freertos.c
 C_SOURCES  += $(FREERTOS_SRC_DIR)/croutine.c
 C_SOURCES  += $(FREERTOS_SRC_DIR)/event_groups.c
 C_SOURCES  += $(FREERTOS_SRC_DIR)/list.c

@@ -29,8 +29,8 @@
 #include "socket.h"
 #include "w5500.h"
 #include <stdio.h>
-
-//#include "driver_w5500.h"
+#include "FreeRTOS.h"
+#include "task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -53,7 +53,7 @@
 /* USER CODE BEGIN PV */
 extern leds_t leds[];
 uint8_t handle_led =  green;
-
+TaskHandle_t LEDTask_Handler=NULL;
 //extern uint8_t dest_addr[];
 extern char dbg_buf[];
 /* USER CODE END PV */
@@ -61,6 +61,7 @@ extern char dbg_buf[];
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 void MX_FREERTOS_Init(void);
+void led_task(void *pvParameters);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -106,25 +107,20 @@ int main(void)
   dbg_putStr ("start\r\n");
   #endif
 
-  leds_init ();
-  control_LED (handle_led, ON);
   w5500_driver_init ();
   socket_init ();
+  xTaskCreate((TaskFunction_t )led_task, (const char*)"led_task", 128, (void* )NULL, (UBaseType_t)3,	(TaskHandle_t*)&LEDTask_Handler);
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in cmsis_os2.c) */
  // MX_FREERTOS_Init();
-
-  /* Start scheduler */
- // osKernelStart();
-
+  vTaskStartScheduler();   //Start scheduler 
   /* We should never get here as control is now taken by the scheduler */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-   // net_poll();
     control_LED (handle_led, OFF);
     handle_led++;
     if (handle_led >= number)
@@ -132,16 +128,6 @@ int main(void)
     control_LED (handle_led, ON);
     HAL_Delay (200);
     check_UDPnet();
-    /*
-    //if(getSn_IR(sn) & Sn_IR_CON)
-    {
-      
-      #ifdef DEBUG_MODE 
-      sprintf (dbg_buf, "send_status=%ld\r\n", (test_UDP_client ((uint8_t *)"test_test")));
-      dbg_putStr (dbg_buf);
-      #endif
-      //wiz_send_data(0, "test_test", 8);
-    }*/
    
     /* USER CODE END WHILE */
 
@@ -196,7 +182,19 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void led_task(void *pvParameters)
+{
+  leds_init ();
+  control_LED (handle_led, ON);
+  for(;;)
+  {
+    control_LED (handle_led, OFF);
+    handle_led++;
+    if (handle_led >= number) { handle_led = green; }
+    control_LED (handle_led, ON);
+    vTaskDelay(500);
+  }
+}
 /* USER CODE END 4 */
 
 /**

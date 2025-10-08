@@ -49,6 +49,8 @@
         "stdarg.h": "c",
         "driver_w5500.h": "c",
         "complex": "c",
-        "format": "c"
+        "format": "c",
+        "freertos.h": "c",
+        "task.h": "c"
     }
 }

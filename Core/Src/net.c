@@ -3,9 +3,11 @@
 #include "gpio.h"
 #include "usart.h"
 #include "socket.h"
-#include "driver_w5500.h"
-//#include "w5500.h"
 #include <string.h>
+
+/* FreeRTOS includes. */
+#include <FreeRTOS.h>
+#include <task.h>
 //----------------------------------------------------------------------------------------------------------//
 #ifdef DEBUG_MODE 
 //extern char dbg_buf[];
@@ -13,8 +15,9 @@
 
 uint8_t rx_buff[512]; //Receive data 
 udp_prop_ptr udpprop = {0}; // структура для свойств соединения сокета
+TaskHandle_t UDPTask_Handler=NULL;
 
-//----------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------
 wiz_NetInfo net_info = {
   .mac    =  MAC_ADDR,
   .ip     =  IP_ADDR ,
@@ -31,6 +34,7 @@ extern void W5500_WriteByte(uint8_t byte);
 extern void W5500_Select (void);
 extern void W5500_Unselect (void);
 
+void udp_task(void *pvParameters);
 //----------------------------------------------------------------------------------------------------------//
 void w5500_driver_init (void)
 {
@@ -67,9 +71,10 @@ void w5500_driver_init (void)
 //----------------------------------------------------------------------------------------------------------//
 void socket_init (void)
 {
+    udpprop.my_port = UDP_PORT;
     uint8_t io_mode = SOCK_IO_NONBLOCK; // Set non-block io mode 
     //uint8_t io_mode = SOCK_IO_BLOCK;
-    uint32_t port = DEF_PORT;
+
     udpprop.cur_socket = DEF_SOCKET;
     int8_t status;
     //Control socket. Control IO mode, Interrupt & Mask of socket and get the socket buffer information
@@ -84,7 +89,7 @@ void socket_init (void)
 
     // Open TCP socket. Initializes the socket with 'sn' passed as parameter and open
    // uint8_t retval = socket(udpprop.cur_socket, Sn_MR_TCP, port, 0);  
-    uint8_t retval = socket(udpprop.cur_socket,Sn_MR_UDP,port,io_mode);
+    uint8_t retval = socket(udpprop.cur_socket,Sn_MR_UDP,udpprop.my_port,io_mode);
     if ( retval != udpprop.cur_socket ) { 
       #ifdef DEBUG_MODE 
       dbg_putStr ("open_socket_error\r\n"); 
@@ -97,9 +102,11 @@ void socket_init (void)
       HAL_Delay(50);
       #endif
     }
+
     #ifdef UDP_MODE
     while ( getSn_SR(udpprop.cur_socket) != SOCK_UDP ); //Socket_register_access_function. Get Sn_SR register
     #endif 
+
     #ifdef TCP_MODE
     while ( getSn_SR(udpprop.cur_socket) != SOCK_INIT ); //Socket_register_access_function. Get Sn_SR register
 
@@ -127,13 +134,15 @@ void socket_init (void)
     #endif
 
     #endif
+
+    xTaskCreate((TaskFunction_t )udp_task, (const char*)"com_task", 128, (void* )NULL, (UBaseType_t)2,	(TaskHandle_t*)&UDPTask_Handler);
 }
 
 //--------------------------------------------------
 int8_t send_UDPmsg (udp_prop_ptr * handle, char * buf, uint8_t len)
 {
   int8_t conn_status = NO_MSG;
-  return (conn_status = sendto(udpprop.cur_socket, (uint8_t *)buf, len, handle->IP, handle->port));
+  return (conn_status = sendto(udpprop.cur_socket, (uint8_t *)buf, len, handle->input_IP, handle->input_port));
 }
 
 
@@ -151,13 +160,12 @@ int8_t get_UDPmsg (udp_prop_ptr * handle, uint8_t *buff, uint16_t size)
     return (conn_status = ERR_MSG);
   }    
 
-  //getSn_IR(udpprop.cur_socket);
-  if ((msg_len = recvfrom(handle->cur_socket, buff, size, handle->IP, &handle->port)) > 0)
+  if ((msg_len = recvfrom(handle->cur_socket, buff, size, handle->input_IP, &handle->input_port)) > 0)
   {
       #ifdef  DEBUG_MODE 
       buff[msg_len] = '\0';
-      snprintf(dbg_buf, dbg_buf_size, "remote_IP:port=%03d.%03d.%03d.%03d:%05d\r\nmsg=%s\r\n", handle->IP[0],  handle->IP[1], 
-       handle->IP[2],  handle->IP[3], handle->port, buff);
+      snprintf(dbg_buf, dbg_buf_size, "remote_IP:port=%03d.%03d.%03d.%03d:%05d\r\nmsg=%s\r\n", handle->input_IP[0],  handle->input_IP[1], 
+      handle->input_IP[2],  handle->input_IP[3], handle->input_port, buff);
       dbg_putStr (dbg_buf);
       #endif
       conn_status = GET_MSG;    
@@ -169,7 +177,19 @@ int8_t get_UDPmsg (udp_prop_ptr * handle, uint8_t *buff, uint16_t size)
 void check_UDPnet(void)
 {
   if ((get_UDPmsg (&udpprop, rx_buff, sizeof (rx_buff))) == GET_MSG)
-  {
-      send_UDPmsg (&udpprop, "answer_OK", 9);
-  }
+  { send_UDPmsg (&udpprop, "answer_OK", 9); }
+}
+
+//---------------------------------------------------------------------------//
+void udp_task(void *pvParameters)
+{
+
+    for(;;)
+    {
+        if ((get_UDPmsg (&udpprop, rx_buff, sizeof (rx_buff))) == GET_MSG)
+        {  
+          send_UDPmsg (&udpprop, "answer_OK", 9); 
+        }
+        vTaskDelay(50);
+    }
 }

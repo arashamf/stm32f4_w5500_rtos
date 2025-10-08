@@ -11,7 +11,7 @@ extern "C" {
 
 //--------------------------------------------------
 #define 	MAX_SIZE_SOCKET 	32
-
+#define     UDP_PORT            1111
 //--------------------------------------------------
 enum STATE
 {
@@ -24,8 +24,9 @@ enum STATE
 
 //--------------------------------------------------
 typedef struct {
-uint8_t IP[4];
-uint16_t port;
+uint8_t input_IP[4];
+uint16_t input_port;
+uint16_t my_port;
 volatile uint8_t cur_socket;  //активный сокет
 } udp_prop_ptr;
 

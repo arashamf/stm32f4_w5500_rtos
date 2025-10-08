@@ -1,9 +1,11 @@
 
 import socket
-
+port_str = input("Port: ") # user port input
+SERVER_PORT = int (port_str);
 # Server address and port
+#SERVER_PORT = 111
 SERVER_IP = '192.168.111.197'  # Localhost
-SERVER_PORT = 1111
+1
 
 # Create a UDP socket
 # AF_INET specifies the address family (IPv4)
@@ -12,8 +14,7 @@ client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 try:
     while True:
-        message = input("Enter message to send (or 'exit' to quit): ")
-
+        message = input("Enter message to send or 'exit' to quit: ")
         if message.lower() == 'exit':
             break
 
@@ -29,6 +30,5 @@ except Exception as e:
     print(f"An error occurred: {e}")
 
 finally:
-    # Close the socket
-    client_socket.close()
+    client_socket.close() # Close the socket
     print("UDP client closed.")
