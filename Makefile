@@ -21,7 +21,7 @@ TARGET = f4_w5500
 ######################################
 # debug build?
 DEBUG = 1
-
+MODE_TCP = 0
 # optimization
 OPT = -Og
 
@@ -66,6 +66,7 @@ ASMM_SOURCES =
 include makefile_std_lib.mk   #Standard Peripheral Library
 include makefile_w5500_lib.mk
 include	makefile_freertos.mk
+#include	filelists_lwip.mk
 
 INC_DIR  = $(patsubst %, -I%, $(C_INCLUDES))
 
@@ -111,19 +112,18 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -D USE_HAL_DRIVER \
+-D USE_FULL_LL_DRIVER \
 -D STM32F407xx \
--D UDP_MODE \
--D USE_FULL_LL_DRIVER 
-
-#ifeq ($(DEBUG), 1)
-#C_DEFS += -D DEBUG_MODE
-#endif
-
 # AS includes
 AS_INCLUDES =  
 
 # C includes
-#C_INCLUDES =  \
+#C_INCLUDES =  
+ifeq ($(MODE_TCP), 1)
+	C_DEFS += -D TCP_MODE
+else
+	C_DEFS += -D UDP_MODE
+endif
 
 ifeq ($(DEBUG), 1)
 CFLAGS += -g -gdwarf-2

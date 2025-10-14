@@ -51,8 +51,11 @@ void w5500_driver_init (void)
       dbg_putStr ("Create_buffers_error\r\n");
       #endif
   }*/
-    setSn_RXBUF_SIZE(udpprop.cur_socket, MAX_SIZE_SOCKET/4); //выделение памяти буфер приёма сокета
-    setSn_TXBUF_SIZE(udpprop.cur_socket, MAX_SIZE_SOCKET/4); //выделение памяти буфер передачи сокета
+  setSn_RXBUF_SIZE(udpprop.cur_socket, MAX_SIZE_SOCKET/4); //выделение памяти буфер приёма сокета
+  setSn_TXBUF_SIZE(udpprop.cur_socket, MAX_SIZE_SOCKET/4); //выделение памяти буфер передачи сокета
+  setSIMR(1<<udpprop.cur_socket); //Set SIMR register. Each bit of SIMR corresponds to each bit of SIR. When a bit of SIMR is ‘1’ and the corresponding bit of SIR is ‘1’, Interrupt will be issued.
+  INT_RECV_ON (udpprop.cur_socket);
+  setINTLEVEL(99);
 
   wizchip_setnetinfo(&net_info); //установка сетевых настроек
   uint8_t phycfgr_stat;
@@ -78,7 +81,6 @@ void socket_init (void)
     udpprop.cur_socket = DEF_SOCKET;
     int8_t status;
     //Control socket. Control IO mode, Interrupt & Mask of socket and get the socket buffer information
-    //if ((status = ctlsocket(udpprop.cur_socket, CS_SET_IOMODE, &io_mode )) == SOCKERR_ARG )
     status = ctlsocket(udpprop.cur_socket, CS_SET_IOMODE, &io_mode);
     { 
       #ifdef DEBUG_MODE 
@@ -95,6 +97,7 @@ void socket_init (void)
       dbg_putStr ("open_socket_error\r\n"); 
       #endif  
     }  
+
     do  {
       #ifdef DEBUG_MODE 
       sprintf(dbg_buf, "open_socket_status_Sn_SR = %x\r\n", getSn_SR(udpprop.cur_socket) ); //Wait for status set 
@@ -102,11 +105,9 @@ void socket_init (void)
       HAL_Delay(50);
       #endif
     }
-
     #ifdef UDP_MODE
     while ( getSn_SR(udpprop.cur_socket) != SOCK_UDP ); //Socket_register_access_function. Get Sn_SR register
     #endif 
-
     #ifdef TCP_MODE
     while ( getSn_SR(udpprop.cur_socket) != SOCK_INIT ); //Socket_register_access_function. Get Sn_SR register
 
@@ -155,7 +156,7 @@ int8_t get_UDPmsg (udp_prop_ptr * handle, uint8_t *buff, uint16_t size)
   if ( getSn_SR(handle->cur_socket) != SOCK_UDP ) 
   {
     #ifdef DEBUG_MODE 
-    dbg_putStr ("udp_error\r\n"); 
+    dbg_putStr ("udp_socket error\r\n"); 
     #endif
     return (conn_status = ERR_MSG);
   }    
@@ -188,7 +189,14 @@ void udp_task(void *pvParameters)
     {
         if ((get_UDPmsg (&udpprop, rx_buff, sizeof (rx_buff))) == GET_MSG)
         {  
+          ALLINT_OFF(udpprop.cur_socket);
+          setSn_IR(0, 0);
           send_UDPmsg (&udpprop, "answer_OK", 9); 
+          #ifdef DEBUG_MODE 
+          sprintf (dbg_buf, "SIR=%d, SIMR=%d, S0_IR=%d, S0_IMR=%d\r\n", getSIR(),  getSIMR(), getSn_IR(0), getSn_IMR(0));
+          dbg_putStr(dbg_buf);
+          #endif
+          INT_RECV_ON(udpprop.cur_socket);
         }
         vTaskDelay(50);
     }

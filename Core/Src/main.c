@@ -54,7 +54,7 @@
 extern leds_t leds[];
 uint8_t handle_led =  green;
 TaskHandle_t LEDTask_Handler=NULL;
-//extern uint8_t dest_addr[];
+
 extern char dbg_buf[];
 /* USER CODE END PV */
 
@@ -121,13 +121,13 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    control_LED (handle_led, OFF);
+    /*control_LED (handle_led, OFF);
     handle_led++;
     if (handle_led >= number)
     { handle_led = green; }
     control_LED (handle_led, ON);
     HAL_Delay (200);
-    check_UDPnet();
+    check_UDPnet();*/
    
     /* USER CODE END WHILE */
 
@@ -195,6 +195,7 @@ void led_task(void *pvParameters)
     vTaskDelay(500);
   }
 }
+
 /* USER CODE END 4 */
 
 /**

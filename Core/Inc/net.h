@@ -10,8 +10,11 @@ extern "C" {
 #include "driver_w5500.h"
 
 //--------------------------------------------------
-#define 	MAX_SIZE_SOCKET 	32
-#define     UDP_PORT            1111
+#define 	MAX_SIZE_SOCKET 	    32
+#define     UDP_PORT                1111
+#define     RECV_INT_MASK           0x04  
+#define     ALLINT_OFF(x)           setSn_IMR(x, 0)
+#define     INT_RECV_ON(x)          setSn_IMR(x, RECV_INT_MASK)
 //--------------------------------------------------
 enum STATE
 {
